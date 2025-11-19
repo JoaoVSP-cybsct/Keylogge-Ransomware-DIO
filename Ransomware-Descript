@@ -1,0 +1,59 @@
+import os
+from cryptography.fernet import Fernet
+
+# 1. Carregar a chave que foi salva anteriormente
+def carregar_chave():
+    return open("chave.key", "rb").read()
+
+# 2. A função que reverte o processo (Descriptografa)
+def descriptografar_arquivo(arquivo, chave):
+    f = Fernet(chave)
+    with open(arquivo, "rb") as file:
+        dados_criptografados = file.read()
+    
+    # Aqui usamos .decrypt em vez de .encrypt
+    dados_originais = f.decrypt(dados_criptografados)
+    
+    with open(arquivo, "wb") as file:
+        file.write(dados_originais)
+
+# 3. Encontrar arquivos (Igual ao ransomware, mas com proteções extras)
+def encontrar_arquivos(diretorio):
+    lista = []
+    for raiz, _, arquivos in os.walk(diretorio):
+        for nome in arquivos:
+            # --- LISTA DE PROTEÇÃO (ALLOWLIST) ---
+            # É crucial ignorar os scripts e a chave para não dar erro
+            if nome != "ransomware.py" \
+               and nome != "descriptografar.py" \
+               and nome != "LEIA ISSO.txt" \
+               and not nome.endswith(".key"):
+                
+                caminho = os.path.join(raiz, nome)
+                lista.append(caminho)
+    return lista
+
+# 4. Execução Principal
+def main():
+    try:
+        chave = carregar_chave()
+        # Procura na pasta atual (".")
+        arquivos = encontrar_arquivos(".") 
+        
+        print(f"Iniciando descriptografia com a chave encontrada...")
+
+        for arquivo in arquivos:
+            try:
+                descriptografar_arquivo(arquivo, chave)
+                print(f"[SUCESSO] Arquivo recuperado: {arquivo}")
+            except Exception as e:
+                # Se um arquivo específico der erro, o script avisa mas continua os outros
+                print(f"[ERRO] Falha ao abrir {arquivo}: {e}")
+
+        print("--- Processo finalizado ---")
+
+    except FileNotFoundError:
+        print("ERRO FATAL: O arquivo 'chave.key' não foi encontrado.")
+
+if __name__ == "__main__":
+    main()
