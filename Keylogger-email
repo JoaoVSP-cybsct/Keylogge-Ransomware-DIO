@@ -6,9 +6,9 @@ from threading import Timer
 log = ""
 
 # Configurações de email
-EMAIL_ORIGEM = "teste.cybrsct1@gmail.com"
-EMAIL_DESTINO = "teste.cybrsct1@gmail.com"
-SENHA_EMAIL = "gqga papx vkeh uqpt"
+EMAIL_ORIGEM = "seuemail@gmail.com"
+EMAIL_DESTINO = "seuemail@gmail.com"
+SENHA_EMAIL = "suasenha"
 
 def enviar_email():
     global log
