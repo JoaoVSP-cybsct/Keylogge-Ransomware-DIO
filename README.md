@@ -98,6 +98,11 @@ Resultado: Os arquivos voltam ao texto original.
 ---
 ## Simulando o Keylogger
 
+Instale a biblioteca:
+```bash
+pip install pynput
+```
+ 
 Execute o script: python keylogger.py.
 
 Digite qualquer texto em outra janela (bloco de notas, navegador).
